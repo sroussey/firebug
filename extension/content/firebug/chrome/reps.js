@@ -509,6 +509,44 @@ FirebugReps.Reference = domplate(Firebug.Rep,
 
 // ********************************************************************************************* //
 
+function mightBeArray(obj, win)
+{
+    try
+    {
+        if (!obj)
+            return false;
+        // do this first to avoid security 1000 errors
+        else if (obj instanceof Ci.nsIDOMHistory)
+            return false;
+        
+        var view = Wrapper.getContentView(win || window);
+        // do this first to avoid security 1000 errors
+        if ("StorageList" in view && obj instanceof view.StorageList)
+            return false;
+        // do this first to avoid exceptions
+        else if (obj.toString() === "[xpconnect wrapped native prototype]")
+            return false;
+    }
+    catch (exc)
+    {
+        try
+        {
+            if (FBTrace.DBG_ERRORS)
+            {
+                // Something weird: without the try/catch, OOM, with no exception??
+                FBTrace.sysout("mightBeArray FAILS: " + exc, exc);
+                FBTrace.sysout("mightBeArray Fails on obj " + obj);
+            }
+        }
+        catch (exexc)
+        {
+            FBTrace.sysout("mightBeArray double ERROR " + exexc, exexc);
+        }
+    }
+
+    return true;
+}
+
 FirebugReps.Arr = domplate(Firebug.Rep,
 {
     tag:
@@ -699,49 +737,13 @@ FirebugReps.Arr = domplate(Firebug.Rep,
     // BEGIN Yahoo BSD Source (modified here)  YAHOO.lang.isArray, YUI 2.2.2 June 2007
     isArray: function(obj, win)
     {
-        win = win || window;
-
-        var view = Wrapper.getContentView(win);
-
-        try
+        if (mightBeArray(obj, win))
         {
-            if (!obj)
-                return false;
-            // do this first to avoid security 1000 errors
-            else if (obj instanceof Ci.nsIDOMHistory)
-                return false;
-            // do this first to avoid security 1000 errors
-            else if ("StorageList" in view && obj instanceof view.StorageList)
-                return false;
-            // do this first to avoid exceptions
-            else if (obj.toString() === "[xpconnect wrapped native prototype]")
-                return false;
-            else if (isFinite(obj.length) && typeof obj.splice === "function")
+            if (isFinite(obj.length) && typeof obj.callee === "function") // arguments
                 return true;
-            else if (isFinite(obj.length) && typeof obj.callee === "function") // arguments
-                return true;
-            else if (obj instanceof view.HTMLCollection)
-                return true;
-            else if (obj instanceof view.NodeList)
+            else if (Arr.isArray(obj))
                 return true;
         }
-        catch (exc)
-        {
-            try
-            {
-                if (FBTrace.DBG_ERRORS)
-                {
-                    // Something weird: without the try/catch, OOM, with no exception??
-                    FBTrace.sysout("isArray FAILS: " + exc, exc);
-                    FBTrace.sysout("isArray Fails on obj " + obj);
-                }
-            }
-            catch (exexc)
-            {
-                FBTrace.sysout("isArray double ERROR " + exexc, exexc);
-            }
-        }
-
         return false;
     },
     // END Yahoo BSD SOURCE See license below.
@@ -752,6 +754,88 @@ FirebugReps.Arr = domplate(Firebug.Rep,
     }
 });
 
+FirebugReps.ArrayishObject = domplate(FirebugReps.Arr,
+{
+    tag:
+        OBJECTBOX({_repObject: "$object",
+            $hasTwisty: "$object|hasSpecialProperties",
+            onclick: "$onToggleProperties"},
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "{["),
+            FOR("item", "$object|longArrayIterator",
+                TAG("$item.tag", {object: "$item.object"}),
+                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
+            ),
+            SPAN({"class": "arrayRightBracket", role: "presentation"}, "]}"),
+            SPAN({"class": "arrayProperties", role: "group"})
+        ),
+
+    shortTag:
+        OBJECTBOX({_repObject: "$object",
+            $hasTwisty: "$object|hasSpecialProperties",
+            onclick: "$onToggleProperties"},
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "{["),
+            FOR("item", "$object|shortArrayIterator",
+                TAG("$item.tag", {object: "$item.object"}),
+                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
+            ),
+            SPAN({"class": "arrayRightBracket"}, "]}"),
+            SPAN({"class": "arrayProperties", role: "group"})
+        ),
+    
+    isArray: function(obj, win)
+    {
+        if (mightBeArray(obj, win))
+        {
+            if (isFinite(obj.length) && typeof obj.splice === "function")
+                return true;
+        }
+        return false;
+    },
+});
+
+FirebugReps.NodeCollection = domplate(FirebugReps.Arr,
+{
+    tag:
+        OBJECTBOX({_repObject: "$object",
+            $hasTwisty: "$object|hasSpecialProperties",
+            onclick: "$onToggleProperties"},
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "&lt;["),
+            FOR("item", "$object|longArrayIterator",
+                TAG("$item.tag", {object: "$item.object"}),
+                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
+            ),
+            SPAN({"class": "arrayRightBracket", role: "presentation"}, "]&gt;"),
+            SPAN({"class": "arrayProperties", role: "group"})
+        ),
+
+    shortTag:
+        OBJECTBOX({_repObject: "$object",
+            $hasTwisty: "$object|hasSpecialProperties",
+            onclick: "$onToggleProperties"},
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "&lt;["),
+            FOR("item", "$object|shortArrayIterator",
+                TAG("$item.tag", {object: "$item.object"}),
+                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
+            ),
+            SPAN({"class": "arrayRightBracket"}, "]&gt;"),
+            SPAN({"class": "arrayProperties", role: "group"})
+        ),
+    
+    isArray: function(obj, win)
+    {
+        if (mightBeArray(obj, win))
+        {
+            var view = Wrapper.getContentView(win || window);
+            if (obj instanceof view.HTMLCollection)
+                return true;
+            else if (obj instanceof view.NodeList)
+                return true;
+        }
+        return false;
+    },
+});
+
+        
 // ********************************************************************************************* //
 
 FirebugReps.Property = domplate(Firebug.Rep,
@@ -3205,6 +3289,8 @@ Firebug.registerRep(
     FirebugReps.Except,
     FirebugReps.XML,
     FirebugReps.Arr,
+    FirebugReps.NodeCollection,
+    FirebugReps.ArrayishObject,
     FirebugReps.XPathResult,
     FirebugReps.Storage,
     FirebugReps.StorageList,
