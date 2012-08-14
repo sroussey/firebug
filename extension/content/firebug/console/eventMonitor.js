@@ -52,7 +52,12 @@ Firebug.EventMonitor = Obj.extend(Firebug.Module,
         if (object && object.addEventListener)
         {
             if (!context.onMonitorEvent)
-                context.onMonitorEvent = function(event) { Firebug.Console.log(event, context); };
+            {
+                var self = this;
+                context.onMonitorEvent = function(event) {
+                    self.onMonitorEvent(event, context);
+                };
+            }
 
             if (!context.eventsMonitored)
                 context.eventsMonitored = [];
@@ -88,7 +93,7 @@ Firebug.EventMonitor = Obj.extend(Firebug.Module,
                 if (eventsMonitored[j].object == object && eventsMonitored[j].type == eventTypes[i])
                 {
                     eventsMonitored.splice(j, 1);
-    
+
                     Events.removeEventListener(object, eventTypes[i], context.onMonitorEvent, false);
                     break;
                 }
@@ -127,22 +132,44 @@ Firebug.EventMonitor = Obj.extend(Firebug.Module,
             if (!monitored)
             {
                 if (FBTrace.DBG_EVENTS)
-                    FBTrace.sysout("EventMonitor.areEventsMonitored - Events not monitored for '"+eventTypes[i]+"'");
-                
+                {
+                    FBTrace.sysout("EventMonitor.areEventsMonitored - Events not monitored for '" +
+                        eventTypes[i] + "'");
+                }
+
                 return false;
             }
             else
             {
                 if (FBTrace.DBG_EVENTS)
-                    FBTrace.sysout("EventMonitor.areEventsMonitored - Events monitored for '"+eventTypes[i]+"'");
+                {
+                    FBTrace.sysout("EventMonitor.areEventsMonitored - Events monitored for '" +
+                        eventTypes[i] + "'");
+                }
             }
         }
 
         return true;
+    },
+
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    // Logging
+
+    onMonitorEvent: function(event, context)
+    {
+        var obj = new Firebug.EventMonitor.EventLog(event);
+        Firebug.Console.log(obj, context);
     }
 });
 
-//********************************************************************************************* //
+// ********************************************************************************************* //
+
+Firebug.EventMonitor.EventLog = function(event)
+{
+    this.event = event;
+}
+
+// ********************************************************************************************* //
 // Helpers
 
 function getMonitoredEventTypes(types)

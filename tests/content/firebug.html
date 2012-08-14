@@ -66,6 +66,7 @@ var testList = [
     {group: "search",             uri: "search/scriptPanelSearch.js",             desc: "Search within the Script panel" },
     {group: "search",             uri: "search/958/issue958.js",                  desc: "Search Field shouldn't be cleared when switching between panels", testPage: "search/958/issue958.html" },
     {group: "search",             uri: "search/2886/issue2886.js",                desc: "JavaScript search field doesn't find some code", testPage: "search/2886/issue2886.html" },
+    {group: "search",             uri: "search/4602/issue4602.js",                desc: "Transfer text selection to Search Field when it's focussed using the keyboard shortcut", testPage: "search/4602/issue4602.html" },
     {group: "search",             uri: "search/4603/issue4603.js",                desc: "Add clear button to the Search Field", testPage: "search/4603/issue4603.html" },
     {group: "shortcuts",          uri: "shortcuts/firebug.js",                    desc: "Firebug shortcuts (F12, Shift+F12, Ctrl+F12)", testPage: "shortcuts/firebug.html" },
     {group: "shortcuts",          uri: "shortcuts/inspector.js",                  desc: "Inspector shortcut (Ctrl+Shift+C)", testPage: "shortcuts/inspector.html" },
@@ -182,7 +183,9 @@ var testList = [
     {group: "html",               uri: "html/3296/issue3296.js",                  desc: "Form's action doesn't change and it isn't shown in HTML panel", testPage: "html/3296/issue3296.html"},
     {group: "html",               uri: "html/4542/issue4542.js",                  desc: "Quotes Issue With JavaScript Function Calls Inside Inline Event Handlers", testPage: "html/4542/issue4542.html"},
     {group: "html",               uri: "html/4669/issue4669.js",                  desc: "HTML tree doesn't expand completely for XML files", testPage: "html/4669/issue4669.xml"},
+    {group: "html",               uri: "html/4670/issue4670.js",                  desc: "Nodes of XML files are always shown as hidden", testPage: "html/4670/issue4670.xml"},
     {group: "html",               uri: "html/4826/issue4826.js",                  desc: "Changing the ID of a node in HTML Panel doesn't update Element Path", testPage: "html/4826/issue4826.html"},
+    {group: "html",               uri: "html/4837/issue4837.js",                  desc: "Editing a node value doesn't update inside HTML panel", testPage: "html/4837/issue4837.html"},
     {group: "html",               uri: "html/5058/issue5058.js",                  desc: "Edit HTML button doesn't work", testPage: "html/5058/issue5058.html"},
     {group: "html",               uri: "html/5255/issue5255.js",                  desc: "Adding elements through Edit HTML shows them in the wrong place", testPage: "html/5255/issue5255.html"},
     {group: "html",               uri: "html/5448/issue5448.js",                  desc: "normalize() breaks display of text nodes with entities", testPage: "html/5448/issue5448.html"},
@@ -217,6 +220,7 @@ var testList = [
     {group: "css",                uri: "css/5461/issue5461.js",                   desc: "When copying selected parts from Style side panel don't copy source link or inherited styles header", testPage: "css/5461/issue5461.html"},
     {group: "css",                uri: "css/5469/issue5469.js",                   desc: "Add units when changing the length '0' with up/down keys", testPage: "css/5469/issue5469.html"},
     {group: "css/computed",       uri: "css/computed/3207/issue3207.js",          desc: "CSS properties in the \"Computed\" tab are not updated correctly", testPage: "css/computed/3207/issue3207.html"},
+    {group: "css/computed",       uri: "css/computed/4132/issue4132.js",          desc: "Only show applied styles in Computed side panel", testPage: "css/computed/4132/issue4132.html"},
     {group: "css/computed",       uri: "css/computed/5449/issue5449.js",          desc: "Show infotips in Computed side panel", testPage: "css/computed/5449/issue5449.html"},
     {group: "css/computed",       uri: "css/computed/5451/issue5451.js",          desc: "Persist scrolling in Computed side panel", testPage: "css/computed/5451/issue5451.html"},
     {group: "script",             uri: "script/debuggerKeyword/testDriver1.6.js", desc: "Break on debugger keyword in various contexts.", testPage: "script/debuggerKeyword/testPage.html"},
@@ -242,11 +246,13 @@ var testList = [
     {group: "script",             uri: "script/4818/issue4818.js",                desc: "frame.eval fails for everthing but the newest frame of the stack", testPage: "script/4818/issue4818.html"},
     {group: "script",             uri: "script/4932/issue4932.js",                desc: "The Script panel shows No Javascript on this page even if they are scripts within an iframe", testPage: "script/4932/issue4932.html"},
     {group: "script/breakpoints", uri: "script/breakpoints/4854/issue4854.js",    desc: "Issue 4854: XHR breakpoints can't be removed from Breakpoints side panel", testPage: "script/breakpoints/4854/issue4854.html"},
+    {group: "script/breakpoints", uri: "script/breakpoints/4889/issue4889.js",    desc: "Issue 4889: Folding for breakpoint categories", testPage: "script/breakpoints/4889/issue4889.html"},
     {group: "script/breakpoints", uri: "script/breakpoints/5525/issue5525.js",    desc: "Setting error breakpoints causes error in Breakpoints side panel", testPage: "script/breakpoints/5525/issue5525.html"},
     {group: "script/callstack",   uri: "script/callstack/1811/issue1811.js",      desc: "Issue 1811: Add prettyName/displayName support to Profiler output and Stacks", testPage: "script/callstack/1811/issue1811.html"},
     {group: "script/callstack",   uri: "script/callstack/3596/issue3596.js",      desc: "Issue 3596: Stack trace forgets where it is", testPage: "script/callstack/3596/issue3596.html"},
     {group: "script/callstack",   uri: "script/callstack/3645/issue3645.js",      desc: "Issue 3645: _firebugRerun and friends need to be elided from the panel status path", testPage: "script/callstack/3645/issue3645.html"},
     {group: "script/callstack",   uri: "script/callstack/4415/issue4415.js",      desc: "Issue 4415: Callstack panel is broken", testPage: "script/callstack/4415/issue4415.html"},
+    {group: "script/callstack",   uri: "script/callstack/4845/issue4845.js",      desc: "Rerun should have a shortcut like the other debugging options", testPage: "script/callstack/4845/issue4845.html"},
     {group: "script/callstack",   uri: "script/callstack/5400/issue5400.js",      desc: "Firebug shows wrong (previous) stacktrace", testPage: "script/callstack/5400/issue5400.html"},
     {group: "script/callstack",   uri: "script/callstack/5544/issue5544.js",      desc: "Issue 5544: Can't set error breakpoint for shallow error", testPage: "script/callstack/5544/issue5544.html"},
     {group: "script/stepping",    uri: "script/stepping/StepIntoInIFrame/test-driver.js", desc: "Step into function within an iframe", testPage: "script/stepping/StepIntoInIFrame/test.html"},
@@ -325,6 +331,7 @@ var testList = [
     {group: "cookies",            uri: "cookies/45/issue45.js",                   desc: "When I copy and paste or edit a cookie contents + (plus) signs get converted to spaces.", testPage: "cookies/45/issue45.php" },
     {group: "cookies",            uri: "cookies/54/issue54.js",                   desc: "urlencoding of cookies value", testPage: "cookies/54/issue54.php" },
     {group: "cookies",            uri: "cookies/60/issue60.js",                   desc: "'[' and ']' characters get badly encoded on cookie name upon editing", testPage: "cookies/60/issue60.php" },
+    {group: "cookies",            uri: "cookies/5560/issue5560.js",               desc: "Add column for raw value", testPage: "cookies/5560/issue5560.php" }
 ];
 </script>
 

@@ -155,12 +155,12 @@ Firebug.ConsolePanel.prototype = Obj.extend(Firebug.ActivablePanel,
         if (state)
             wasScrolledToBottom = state.wasScrolledToBottom;
 
-        if (typeof(wasScrolledToBottom) == "boolean")
+        if (typeof wasScrolledToBottom == "boolean")
         {
             this.wasScrolledToBottom = wasScrolledToBottom;
             delete state.wasScrolledToBottom;
         }
-        else
+        else if (typeof this.wasScrolledToBottom != "boolean")
         {
             // If the previous state doesn't says where to scroll,
             // scroll to the bottom by default.
@@ -250,8 +250,8 @@ Firebug.ConsolePanel.prototype = Obj.extend(Firebug.ActivablePanel,
                 "console.option.tip.Show_JavaScript_Warnings"),
             Menu.optionMenu("ShowCSSErrors", "showCSSErrors",
                 "console.option.tip.Show_CSS_Errors"),
-            Menu.optionMenu("ShowXMLErrors", "showXMLErrors",
-                "console.option.tip.Show_XML_Errors"),
+            Menu.optionMenu("ShowXMLHTMLErrors", "showXMLErrors",
+                "console.option.tip.Show_XML_HTML_Errors"),
             Menu.optionMenu("ShowXMLHttpRequests", "showXMLHttpRequests",
                 "console.option.tip.Show_XMLHttpRequests"),
             Menu.optionMenu("ShowChromeErrors", "showChromeErrors",

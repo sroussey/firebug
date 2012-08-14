@@ -836,6 +836,10 @@ domMemberMap.Window =
     "mozRequestAnimationFrame", //FF4.0
     "mozIndexedDB", //FF4.0
 
+    "mozCancelAnimationFrame",
+    "mozCancelRequestAnimationFrame",
+    "indexedDB",
+
     "status",
     "defaultStatus",
 
@@ -873,7 +877,6 @@ domMemberMap.Window =
     "length",
 
     "sessionStorage",
-    "globalStorage",
 
     "setTimeout",
     "setInterval",
@@ -1877,6 +1880,14 @@ Dom.domInlineEventHandlersMap =
     "onvolumechange": 1,
     "onwaiting": 1,
     "onmozfullscreenchange": 1,
+    "ondevicelight": 1,
+    "ondeviceproximity": 1,
+    "onmouseenter": 1,
+    "onmouseleave": 1,
+    "onmozfullscreenerror": 1,
+    "onmozpointerlockchange": 1,
+    "onmozpointerlockerror": 1,
+    "onuserproximity": 1,
 }
 
 // ********************************************************************************************* //

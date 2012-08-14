@@ -126,9 +126,9 @@ const DirTablePlate = domplate(Firebug.Rep,
             TAG("$memberRowTag", {member: "$member"})
         ),
 
-    memberIterator: function(object, level)
+    memberIterator: function(object)
     {
-        var members = Firebug.DOMBasePanel.prototype.getMembers(object, level, this.context);
+        var members = Firebug.DOMBasePanel.prototype.getMembers(object, 0, null);
         if (members.length)
             return members;
 
@@ -422,7 +422,7 @@ Firebug.DOMBasePanel.prototype = Obj.extend(Firebug.Panel,
     /**
      * @param object a user-level object wrapped in security blanket
      * @param level for a.b.c, level is 2
-     * @param context
+     * @param optional context
      */
     getMembers: function(object, level, context)
     {
@@ -438,12 +438,6 @@ Firebug.DOMBasePanel.prototype = Obj.extend(Firebug.Panel,
             // Special case for "arguments", which is not enumerable by for...in statement.
             if (isArguments(object))
                 object = Arr.cloneArray(object);
-
-            if ("StorageList" in window && object instanceof window.StorageList)
-            {
-                var domain = context.window.location.hostname;
-                object = object.namedItem(domain);
-            }
 
             try
             {
@@ -680,12 +674,6 @@ Firebug.DOMBasePanel.prototype = Obj.extend(Firebug.Panel,
                 hasChildren = hasChildren || Obj.hasProperties(proto,
                     !Firebug.showEnumerableProperties, Firebug.showOwnProperties);
             }
-        }
-
-        if ("StorageList" in window && value instanceof window.StorageList)
-        {
-            var domain = context.window.location.hostname;
-            hasChildren = value.namedItem(domain).length > 0;
         }
 
         var member = {
