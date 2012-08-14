@@ -739,7 +739,6 @@ FirebugReps.Arr = domplate(Firebug.Rep,
     },
 
     // http://code.google.com/p/fbug/issues/detail?id=874
-    // BEGIN Yahoo BSD Source (modified here)  YAHOO.lang.isArray, YUI 2.2.2 June 2007
     isArray: function(obj, win)
     {
         if (mightBeArray(obj, win))
@@ -759,8 +758,7 @@ FirebugReps.Arr = domplate(Firebug.Rep,
         }
         return false;
     },
-    // END Yahoo BSD SOURCE See license below.
-
+    
     getTitle: function(object, context)
     {
         return "[" + object.length + "]";
