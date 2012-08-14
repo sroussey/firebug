@@ -547,33 +547,8 @@ function mightBeArray(obj, win)
     return true;
 }
 
-FirebugReps.Arr = domplate(Firebug.Rep,
+FirebugReps.ArrBase = domplate(Firebug.Rep,
 {
-    tag:
-        OBJECTBOX({_repObject: "$object",
-            $hasTwisty: "$object|hasSpecialProperties",
-            onclick: "$onToggleProperties"},
-            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "["),
-            FOR("item", "$object|longArrayIterator",
-                TAG("$item.tag", {object: "$item.object"}),
-                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
-            ),
-            SPAN({"class": "arrayRightBracket", role: "presentation"}, "]"),
-            SPAN({"class": "arrayProperties", role: "group"})
-        ),
-
-    shortTag:
-        OBJECTBOX({_repObject: "$object",
-            $hasTwisty: "$object|hasSpecialProperties",
-            onclick: "$onToggleProperties"},
-            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "["),
-            FOR("item", "$object|shortArrayIterator",
-                TAG("$item.tag", {object: "$item.object"}),
-                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
-            ),
-            SPAN({"class": "arrayRightBracket"}, "]"),
-            SPAN({"class": "arrayProperties", role: "group"})
-        ),
 
     longArrayIterator: function(array)
     {
@@ -732,6 +707,42 @@ FirebugReps.Arr = domplate(Firebug.Rep,
         // Highlight multiple elements on the page.
         Firebug.Inspector.highlightObject(arr, context);
     },
+    titleTag:
+        SPAN({"class": "objectTitle"}, "$object|getTitleTag"),
+
+    getTitleTag: function(object, context)
+    {
+        return "[" + object.length + "]";
+    } 
+});
+    
+FirebugReps.Arr = domplate(FirebugReps.ArrBase,
+{
+    tag:
+        OBJECTBOX({_repObject: "$object",
+            $hasTwisty: "$object|hasSpecialProperties",
+            onclick: "$onToggleProperties"},
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "["),
+            FOR("item", "$object|longArrayIterator",
+                TAG("$item.tag", {object: "$item.object"}),
+                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
+            ),
+            SPAN({"class": "arrayRightBracket", role: "presentation"}, "]"),
+            SPAN({"class": "arrayProperties", role: "group"})
+        ),
+
+    shortTag:
+        OBJECTBOX({_repObject: "$object",
+            $hasTwisty: "$object|hasSpecialProperties",
+            onclick: "$onToggleProperties"},
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "["),
+            FOR("item", "$object|shortArrayIterator",
+                TAG("$item.tag", {object: "$item.object"}),
+                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
+            ),
+            SPAN({"class": "arrayRightBracket"}, "]"),
+            SPAN({"class": "arrayProperties", role: "group"})
+        ),
 
     // http://code.google.com/p/fbug/issues/detail?id=874
     isArray: function(obj, win)
@@ -744,20 +755,16 @@ FirebugReps.Arr = domplate(Firebug.Rep,
                 return true;
         }
         return false;
-    },
-    
-    getTitle: function(object, context)
-    {
-        return "[" + object.length + "]";
     }
 });
 
-FirebugReps.ArrayishObject = domplate(FirebugReps.Arr,
+FirebugReps.ArrayishObject = domplate(FirebugReps.ArrBase,
 {
     tag:
         OBJECTBOX({_repObject: "$object",
             $hasTwisty: "$object|hasSpecialProperties",
             onclick: "$onToggleProperties"},
+            SPAN({"class": "objectTitle"}, "$object|getTitle "),
             SPAN({"class": "arrayLeftBracket", role: "presentation"}, "{["),
             FOR("item", "$object|longArrayIterator",
                 TAG("$item.tag", {object: "$item.object"}),
@@ -784,45 +791,8 @@ FirebugReps.ArrayishObject = domplate(FirebugReps.Arr,
     {
         if (mightBeArray(obj, win))
         {
-            if (isFinite(obj.length) && typeof obj.splice === "function")
+            if (isFinite(obj.length) && typeof obj.splice === "function" && obj.length)
                 return true;
-        }
-        return false;
-    },
-});
-
-FirebugReps.NodeCollection = domplate(FirebugReps.Arr,
-{
-    tag:
-        OBJECTBOX({_repObject: "$object",
-            $hasTwisty: "$object|hasSpecialProperties",
-            onclick: "$onToggleProperties"},
-            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "&lt;["),
-            FOR("item", "$object|longArrayIterator",
-                TAG("$item.tag", {object: "$item.object"}),
-                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
-            ),
-            SPAN({"class": "arrayRightBracket", role: "presentation"}, "]&gt;"),
-            SPAN({"class": "arrayProperties", role: "group"})
-        ),
-
-    shortTag:
-        OBJECTBOX({_repObject: "$object",
-            $hasTwisty: "$object|hasSpecialProperties",
-            onclick: "$onToggleProperties"},
-            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "&lt;["),
-            FOR("item", "$object|shortArrayIterator",
-                TAG("$item.tag", {object: "$item.object"}),
-                SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
-            ),
-            SPAN({"class": "arrayRightBracket"}, "]&gt;"),
-            SPAN({"class": "arrayProperties", role: "group"})
-        ),
-    
-    isArray: function(obj, win)
-    {
-        if (mightBeArray(obj, win))
-        {
             var view = Wrapper.getContentView(win || window);
             if (obj instanceof view.HTMLCollection)
                 return true;
@@ -833,7 +803,7 @@ FirebugReps.NodeCollection = domplate(FirebugReps.Arr,
     },
 });
 
-        
+
 // ********************************************************************************************* //
 
 FirebugReps.Property = domplate(Firebug.Rep,
@@ -3222,7 +3192,6 @@ Firebug.registerRep(
     FirebugReps.Except,
     FirebugReps.XML,
     FirebugReps.Arr,
-    FirebugReps.NodeCollection,
     FirebugReps.ArrayishObject,
     FirebugReps.XPathResult,
     FirebugReps.Storage,
