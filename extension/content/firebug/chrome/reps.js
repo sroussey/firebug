@@ -793,12 +793,12 @@ FirebugReps.ArrayishObject = domplate(FirebugReps.ArrBase,
             $hasTwisty: "$object|hasSpecialProperties",
             onclick: "$onToggleProperties"},
             SPAN({"class": "objectTitle"}, "$object|getTitle "),
-            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "{["),
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "["),
             FOR("item", "$object|longArrayIterator",
                 TAG("$item.tag", {object: "$item.object"}),
                 SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
             ),
-            SPAN({"class": "arrayRightBracket", role: "presentation"}, "]}"),
+            SPAN({"class": "arrayRightBracket", role: "presentation"}, "]"),
             SPAN({"class": "arrayProperties", role: "group"})
         ),
 
@@ -806,12 +806,12 @@ FirebugReps.ArrayishObject = domplate(FirebugReps.ArrBase,
         OBJECTBOX({_repObject: "$object",
             $hasTwisty: "$object|hasSpecialProperties",
             onclick: "$onToggleProperties"},
-            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "{["),
+            SPAN({"class": "arrayLeftBracket", role: "presentation"}, "["),
             FOR("item", "$object|shortArrayIterator",
                 TAG("$item.tag", {object: "$item.object"}),
                 SPAN({"class": "arrayComma", role: "presentation"}, "$item.delim")
             ),
-            SPAN({"class": "arrayRightBracket"}, "]}"),
+            SPAN({"class": "arrayRightBracket"}, "]"),
             SPAN({"class": "arrayProperties", role: "group"})
         ),
     
