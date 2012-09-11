@@ -113,6 +113,68 @@ Css.getCSSShorthandCategory = function(nodeType, shorthandProp, keyword)
     return category;
 };
 
+/**
+ * Parses the CSS properties of a CSSStyleRule
+ * @param style CSSStyleRule to get the properties of
+ * @param element Element to which the style applies. Needed for parsing shorthand properties correctly.
+ * @returns {Array} Properties represented by {name, value, priority, longhandProps}
+ */
+Css.parseCSSProps = function(style, element)
+{
+    var props = [];
+
+    if (!element)
+    {
+        for (var i = 0, len = style.length; i < len; ++i)
+        {
+            var prop = style.item(i);
+            props.push({name: prop,
+                value: style.getPropertyValue(prop),
+                priority: style.getPropertyPriority(longhandProp)});
+        }
+    }
+    else
+    {
+        var lineRE = /(?:[^;\(]*(?:\([^\)]*?\))?[^;\(]*)*;?/g;
+        var propRE = /\s*([^:\s]*)\s*:\s*(.*?)\s*(?:! (important))?;?$/;
+        var lines = style.cssText.match(lineRE);
+        for (var i = 0, len = lines.length; i < len; ++i)
+        {
+            var match = propRE.exec(lines[i]);
+            if (!match)
+                continue;
+
+            if (match[2])
+            {
+                var prop = {name: match[1], value: match[2], priority: match[3] || ""};
+
+                // Add longhand properties to shorthand property
+                var doc = element.ownerDocument;
+                var dummyElement = doc.createElementNS(element.namespaceURI, element.tagName);
+                var dummyStyle = dummyElement.style;
+                dummyStyle.cssText = "";
+                dummyStyle.setProperty(prop.name, prop.value, prop.priority);
+
+                if (dummyStyle.length > 1)
+                {
+                    prop.longhandProps = [];
+                    for (var j = 0, propLen = dummyStyle.length; j < propLen; ++j)
+                    {
+                        var longhandProp = dummyStyle.item(j);
+                        prop.longhandProps.push({name: longhandProp,
+                            value: dummyStyle.getPropertyValue(longhandProp),
+                            priority: dummyStyle.getPropertyPriority(longhandProp)});
+                    }
+                }
+
+                props.push(prop);
+            }
+        }
+    }
+
+    return props;
+};
+
 Css.isColorKeyword = function(keyword)
 {
     if (keyword == "transparent")
@@ -1042,41 +1104,6 @@ Css.cssInfo.svg =
     "visibility": ["visibility"],
     "word-spacing": ["normal"],
     "writing-mode": ["writingMode"]
-};
-
-Css.inheritedStyleNames =
-{
-    "border-collapse": 1,
-    "border-spacing": 1,
-    "border-style": 1,
-    "caption-side": 1,
-    "color": 1,
-    "cursor": 1,
-    "direction": 1,
-    "empty-cells": 1,
-    "font": 1,
-    "font-family": 1,
-    "font-size-adjust": 1,
-    "font-size": 1,
-    "font-style": 1,
-    "font-variant": 1,
-    "font-weight": 1,
-    "letter-spacing": 1,
-    "line-height": 1,
-    "list-style": 1,
-    "list-style-image": 1,
-    "list-style-position": 1,
-    "list-style-type": 1,
-    "opacity": 1,
-    "quotes": 1,
-    "text-align": 1,
-    "text-decoration": 1,
-    "text-indent": 1,
-    "text-shadow": 1,
-    "text-transform": 1,
-    "white-space": 1,
-    "word-spacing": 1,
-    "word-wrap": 1
 };
 
 Css.multiValuedProperties =
