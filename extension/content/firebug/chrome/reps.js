@@ -738,7 +738,7 @@ FirebugReps.ArrBase = domplate(Firebug.Rep,
     },
     // END Yahoo BSD SOURCE See license below.
 
-    getTitle: function(object, context)
+    getTitleTag: function(object, context)
     {
         return "[" + object.length + "]";
     } 
@@ -806,6 +806,7 @@ FirebugReps.ArrayishObject = domplate(FirebugReps.ArrBase,
         OBJECTBOX({_repObject: "$object",
             $hasTwisty: "$object|hasSpecialProperties",
             onclick: "$onToggleProperties"},
+            SPAN({"class": "objectTitle"}, "$object|getTitle "),
             SPAN({"class": "arrayLeftBracket", role: "presentation"}, "["),
             FOR("item", "$object|shortArrayIterator",
                 TAG("$item.tag", {object: "$item.object"}),
