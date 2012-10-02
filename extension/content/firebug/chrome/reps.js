@@ -815,6 +815,14 @@ FirebugReps.ArrayishObject = domplate(FirebugReps.ArrBase,
             SPAN({"class": "arrayProperties", role: "group"})
         ),
     
+    getTitle: function(object, context)
+    {
+        const re =/\[object ([^\]]*)/;
+        var label = Str.safeToString(object);
+        var m = re.exec(label);
+        return m[1] || label;
+    },
+    
     isArray: function(obj, win)
     {
         if (mightBeArray(obj, win))
